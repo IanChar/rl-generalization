@@ -10,7 +10,7 @@ class BaseGymEnvironment(gym.Env):
     def parameters(self):
         """Return environment parameters."""
         return {
-            'id': self.spec.id,
+            "id": self.spec.id,
         }
 
 
@@ -19,6 +19,5 @@ class EnvBinarySuccessMixin(ABC):
 
     @abstractmethod
     def is_success(self):
-         """Returns True is current state indicates success, False otherwise"""
-         pass
-
+        """Returns True is current state indicates success, False otherwise"""
+        pass

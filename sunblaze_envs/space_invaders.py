@@ -10,21 +10,20 @@ class Missile(PhysicalObject):
     """Missile."""
 
     def __init__(self, *args, **kwargs):
-        super(Missile, self).__init__('missile.png', *args, **kwargs)
+        super(Missile, self).__init__("missile.png", *args, **kwargs)
 
     def create_physical_entity(self):
         body = self._engine.CreateDynamicBody(
-            position=self.physical_position,
-            fixedRotation=True
+            position=self.physical_position, fixedRotation=True
         )
         body.CreatePolygonFixture(
             box=(
                 (self.width / 2.0) / self._world.physical_scale,
-                (self.height / 2.0) / self._world.physical_scale
+                (self.height / 2.0) / self._world.physical_scale,
             ),
             density=1.0,
             friction=0.0,
-            restitution=0.0
+            restitution=0.0,
         )
 
         # Constrain missile movements to Y axis.
@@ -49,12 +48,11 @@ class InvaderMissile(Missile):
         """Fires a missile."""
         missile = cls(
             world=world,
-            position=(
-                entity.position[0],
-                entity.position[1] - entity.height - 10,
-            )
+            position=(entity.position[0], entity.position[1] - entity.height - 10,),
         )
-        missile.apply_impulse((0, (-impulse / world.physical_scale) * missile.body.mass))
+        missile.apply_impulse(
+            (0, (-impulse / world.physical_scale) * missile.body.mass)
+        )
         return missile
 
     def should_collide(self, other):
@@ -77,10 +75,7 @@ class PlayerMissile(Missile):
         """Fires a missile."""
         missile = cls(
             world=world,
-            position=(
-                entity.position[0],
-                entity.position[1] + entity.height + 10,
-            )
+            position=(entity.position[0], entity.position[1] + entity.height + 10,),
         )
         missile.apply_impulse((0, (impulse / world.physical_scale) * missile.body.mass))
         return missile
@@ -105,23 +100,23 @@ class Invader(PhysicalObject):
     """Invader."""
 
     # Types of invaders.
-    TYPE_1 = 'invader_1'
-    TYPE_2 = 'invader_2'
-    TYPE_3 = 'invader_3'
+    TYPE_1 = "invader_1"
+    TYPE_2 = "invader_2"
+    TYPE_3 = "invader_3"
 
     def __init__(self, *args, **kwargs):
-        self._type = kwargs.pop('invader_type')
+        self._type = kwargs.pop("invader_type")
 
-        kwargs.setdefault('color', (0, 255, 0))
-        kwargs.setdefault('scale', 1)
-        super(Invader, self).__init__('{}.png'.format(self._type), *args, **kwargs)
+        kwargs.setdefault("color", (0, 255, 0))
+        kwargs.setdefault("scale", 1)
+        super(Invader, self).__init__("{}.png".format(self._type), *args, **kwargs)
 
     def create_physical_entity(self):
         body = self._engine.CreateStaticBody(position=self.physical_position)
         body.CreatePolygonFixture(
             box=(
                 (self.width / 2.0) / self._world.physical_scale,
-                (self.height / 2.0) / self._world.physical_scale
+                (self.height / 2.0) / self._world.physical_scale,
             ),
             density=1.0,
             friction=0.0,
@@ -174,17 +169,17 @@ class Shield(PhysicalObject):
     """Shield for the player."""
 
     def __init__(self, *args, **kwargs):
-        self.health = kwargs.pop('health')
+        self.health = kwargs.pop("health")
 
-        kwargs.setdefault('color', (255, 240, 0))
-        super(Shield, self).__init__('shield.png', *args, **kwargs)
+        kwargs.setdefault("color", (255, 240, 0))
+        super(Shield, self).__init__("shield.png", *args, **kwargs)
 
     def create_physical_entity(self):
         body = self._engine.CreateStaticBody(position=self.physical_position)
         body.CreatePolygonFixture(
             box=(
                 (self.width / 2.0) / self._world.physical_scale,
-                (self.height / 2.0) / self._world.physical_scale
+                (self.height / 2.0) / self._world.physical_scale,
             ),
             density=1.0,
             friction=0.0,
@@ -205,22 +200,20 @@ class PlayerShip(PhysicalObject):
     """Player ship."""
 
     def __init__(self, *args, **kwargs):
-        super(PlayerShip, self).__init__('ship.png', *args, **kwargs)
+        super(PlayerShip, self).__init__("ship.png", *args, **kwargs)
 
     def create_physical_entity(self):
         body = self._engine.CreateDynamicBody(
-            position=self.physical_position,
-            linearDamping=0.99,
-            fixedRotation=True
+            position=self.physical_position, linearDamping=0.99, fixedRotation=True
         )
         body.CreatePolygonFixture(
             box=(
                 (self.width / 2.0) / self._world.physical_scale,
-                (self.height / 2.0) / self._world.physical_scale
+                (self.height / 2.0) / self._world.physical_scale,
             ),
             density=1.0,
             friction=0.0,
-            restitution=0.0
+            restitution=0.0,
         )
 
         # Constrain paddle movements to X axis.
@@ -243,24 +236,24 @@ class SpaceInvadersWorld(PhysicalWorld):
 
     # Player missile parameters.
     parameters_player_missile = {
-        'class': PlayerMissile,
+        "class": PlayerMissile,
         # Firing rate (in steps).
-        'fire_rate': 20,
+        "fire_rate": 20,
         # Maximum number of missiles on screen.
-        'max_missiles': 2,
+        "max_missiles": 2,
         # Missile impulse.
-        'missile_impulse': 100,
+        "missile_impulse": 100,
     }
 
     # Invader missile parameters.
     parameters_invader_missile = {
-        'class': InvaderMissile,
+        "class": InvaderMissile,
         # Firing rate (in steps).
-        'fire_rate': 15,
+        "fire_rate": 15,
         # Maximum number of missiles on screen.
-        'max_missiles': 10,
+        "max_missiles": 10,
         # Missile impulse.
-        'missile_impulse': 100,
+        "missile_impulse": 100,
     }
 
     # Number of invaders per row.
@@ -281,7 +274,9 @@ class SpaceInvadersWorld(PhysicalWorld):
         self.create_invaders()
         self.create_shields()
 
-        self.player_ship = self.player_ship_class(world=self, position=self.initial_player_ship_position())
+        self.player_ship = self.player_ship_class(
+            world=self, position=self.initial_player_ship_position()
+        )
         parent.add(self.player_ship)
 
     def create_shields(self):
@@ -299,7 +294,9 @@ class SpaceInvadersWorld(PhysicalWorld):
 
         for row, invader_type in enumerate(self.initial_invader_configuration()):
             for column in range(self.invaders_per_row):
-                invader = self.invader_class(world=self, position=(offset_x, offset_y), invader_type=invader_type)
+                invader = self.invader_class(
+                    world=self, position=(offset_x, offset_y), invader_type=invader_type
+                )
                 self._batch.add(invader)
 
                 offset_x += 48
@@ -310,25 +307,23 @@ class SpaceInvadersWorld(PhysicalWorld):
     def fire_missile(self, entity, parameters):
         # Check if there are not too many missiles on screen already.
         def count_missiles(node):
-            if not isinstance(node, parameters['class']):
+            if not isinstance(node, parameters["class"]):
                 return
 
             return 1
 
-        if sum(self.walk(count_missiles)) >= parameters['max_missiles']:
+        if sum(self.walk(count_missiles)) >= parameters["max_missiles"]:
             return
 
         # Enforce firing rate.
-        last_fire_step = self._last_fire_step.get(parameters['class'], 0)
-        if self._step - last_fire_step <= parameters['fire_rate']:
+        last_fire_step = self._last_fire_step.get(parameters["class"], 0)
+        if self._step - last_fire_step <= parameters["fire_rate"]:
             return
-        self._last_fire_step[parameters['class']] = self._step
+        self._last_fire_step[parameters["class"]] = self._step
 
         # Fire missile.
-        missile = parameters['class'].fire(
-            world=self,
-            entity=entity,
-            impulse=parameters['missile_impulse']
+        missile = parameters["class"].fire(
+            world=self, entity=entity, impulse=parameters["missile_impulse"]
         )
         self._batch.add(missile)
 
@@ -343,9 +338,9 @@ class SpaceInvadersWorld(PhysicalWorld):
     @property
     def parameters(self):
         parameters = super(SpaceInvadersWorld, self).parameters
-        parameters.update({
-            'world': 'space_invaders',
-        })
+        parameters.update(
+            {"world": "space_invaders",}
+        )
         return parameters
 
     def ship_impulse(self):
@@ -360,12 +355,20 @@ class SpaceInvadersWorld(PhysicalWorld):
         elif action == 1:
             # Move player left.
             self.player_ship.apply_impulse(
-                ((-self.ship_impulse() / self.physical_scale) * self.player_ship.body.mass, 0)
+                (
+                    (-self.ship_impulse() / self.physical_scale)
+                    * self.player_ship.body.mass,
+                    0,
+                )
             )
         elif action == 2:
             # Move player right.
             self.player_ship.apply_impulse(
-                ((self.ship_impulse() / self.physical_scale) * self.player_ship.body.mass, 0)
+                (
+                    (self.ship_impulse() / self.physical_scale)
+                    * self.player_ship.body.mass,
+                    0,
+                )
             )
         elif action == 3:
             # Fire missile.
@@ -373,9 +376,9 @@ class SpaceInvadersWorld(PhysicalWorld):
 
     def initial_shield_configuration(self):
         return [
-            {'health': 20, 'position': (self._width // 4, 200)},
-            {'health': 20, 'position': (2 * self._width // 4, 200)},
-            {'health': 20, 'position': (3 * self._width // 4, 200)},
+            {"health": 20, "position": (self._width // 4, 200)},
+            {"health": 20, "position": (2 * self._width // 4, 200)},
+            {"health": 20, "position": (3 * self._width // 4, 200)},
         ]
 
     def initial_invader_row(self):
@@ -409,7 +412,7 @@ class SpaceInvadersWorld(PhysicalWorld):
         else:
             missiles = 5
 
-        self.parameters_invader_missile['max_missiles'] = missiles
+        self.parameters_invader_missile["max_missiles"] = missiles
 
     def add_kill_score(self):
         """Add score when an invader is killed."""
@@ -435,7 +438,9 @@ class SpaceInvadersWorld(PhysicalWorld):
         self.create_shields()
 
         self.player_ship.kill()
-        self.player_ship = self.player_ship_class(world=self, position=self.initial_player_ship_position())
+        self.player_ship = self.player_ship_class(
+            world=self, position=self.initial_player_ship_position()
+        )
         self._batch.add(self.player_ship)
 
     def step(self):
@@ -488,18 +493,18 @@ class SingleLineSpaceInvadersWorld(SpaceInvadersWorld):
 class InfiniteShieldsSpaceInvadersWorld(SpaceInvadersWorld):
     def initial_shield_configuration(self):
         return [
-            {'health': np.inf, 'position': (self._width // 4, 200)},
-            {'health': np.inf, 'position': (2 * self._width // 4, 200)},
-            {'health': np.inf, 'position': (3 * self._width // 4, 200)},
+            {"health": np.inf, "position": (self._width // 4, 200)},
+            {"health": np.inf, "position": (2 * self._width // 4, 200)},
+            {"health": np.inf, "position": (3 * self._width // 4, 200)},
         ]
 
 
 class OffsetPlayerSpaceInvadersWorld(SpaceInvadersWorld):
     def initial_shield_configuration(self):
         return [
-            {'health': 20, 'position': (self._width // 4, 200)},
-            {'health': 20, 'position': (2 * self._width // 4, 200)},
-            {'health': 20, 'position': (3 * self._width // 4, 200)},
+            {"health": 20, "position": (self._width // 4, 200)},
+            {"health": 20, "position": (2 * self._width // 4, 200)},
+            {"health": 20, "position": (3 * self._width // 4, 200)},
         ]
 
     def initial_player_ship_position(self):
@@ -510,9 +515,9 @@ class OffsetPlayerSpaceInvadersWorld(SpaceInvadersWorld):
 class OffsetPlayer150SpaceInvadersWorld(SpaceInvadersWorld):
     def initial_shield_configuration(self):
         return [
-            {'health': 20, 'position': (self._width // 4, 200)},
-            {'health': 20, 'position': (2 * self._width // 4, 200)},
-            {'health': 20, 'position': (3 * self._width // 4, 200)},
+            {"health": 20, "position": (self._width // 4, 200)},
+            {"health": 20, "position": (2 * self._width // 4, 200)},
+            {"health": 20, "position": (3 * self._width // 4, 200)},
         ]
 
     def initial_player_ship_position(self):
@@ -526,22 +531,24 @@ class RandomOffsetPlayerSpaceInvadersWorld(SpaceInvadersWorld):
 
     def initial_shield_configuration(self):
         return [
-            {'health': 20, 'position': (self._width // 4, 200)},
-            {'health': 20, 'position': (2 * self._width // 4, 200)},
-            {'health': 20, 'position': (3 * self._width // 4, 200)},
+            {"health": 20, "position": (self._width // 4, 200)},
+            {"health": 20, "position": (2 * self._width // 4, 200)},
+            {"health": 20, "position": (3 * self._width // 4, 200)},
         ]
 
     def initial_player_ship_position(self):
         """Initial player ship position after reset."""
-        self._player_offset = int(self.np_random.uniform(self.offset_range_start, self.offset_range_end))
+        self._player_offset = int(
+            self.np_random.uniform(self.offset_range_start, self.offset_range_end)
+        )
         return (self._width / 2, self._player_offset)
 
     @property
     def parameters(self):
         parameters = super(RandomOffsetPlayerSpaceInvadersWorld, self).parameters
-        parameters.update({
-            'player_offset': self._player_offset,
-        })
+        parameters.update(
+            {"player_offset": self._player_offset,}
+        )
         return parameters
 
 
@@ -559,19 +566,19 @@ class SideObstacle(PhysicalObject):
     """Side obstacle object."""
 
     def __init__(self, *args, **kwargs):
-        kwargs['color'] = (80, 80, 80)
-        super(SideObstacle, self).__init__('side_obstacle.png', *args, **kwargs)
+        kwargs["color"] = (80, 80, 80)
+        super(SideObstacle, self).__init__("side_obstacle.png", *args, **kwargs)
 
     def create_physical_entity(self):
         body = self._engine.CreateStaticBody(position=self.physical_position)
         body.CreatePolygonFixture(
             box=(
                 (self.width / 2.0) / self._world.physical_scale,
-                (self.height / 2.0) / self._world.physical_scale
+                (self.height / 2.0) / self._world.physical_scale,
             ),
             density=10.0,
             friction=0.0,
-            restitution=0.0
+            restitution=0.0,
         )
 
         return body
@@ -584,7 +591,9 @@ class SideObstacleSpaceInvadersWorld(SpaceInvadersWorld):
         self.obstacle1 = SideObstacle(world=self, position=(10, self._height / 2))
         parent.add(self.obstacle1, z=1)
 
-        self.obstacle2 = SideObstacle(world=self, position=(self._width - 10, self._height / 2))
+        self.obstacle2 = SideObstacle(
+            world=self, position=(self._width - 10, self._height / 2)
+        )
         parent.add(self.obstacle2, z=1)
 
 
@@ -600,7 +609,9 @@ class RightSideObstacleSpaceInvadersWorld(SpaceInvadersWorld):
     def create_world(self, parent):
         super(RightSideObstacleSpaceInvadersWorld, self).create_world(parent)
 
-        self.obstacle = SideObstacle(world=self, position=(self._width - 10, self._height / 2))
+        self.obstacle = SideObstacle(
+            world=self, position=(self._width - 10, self._height / 2)
+        )
         parent.add(self.obstacle, z=1)
 
 
@@ -612,15 +623,15 @@ class RandomSideObstacleSpaceInvadersWorld(SpaceInvadersWorld):
 
     def reset_obstacle(self):
         """Reset obstacle width and position."""
-        if hasattr(self, 'obstacle'):
+        if hasattr(self, "obstacle"):
             self.obstacle.kill()
 
-        side = self.np_random.choice(['left', 'right'])
+        side = self.np_random.choice(["left", "right"])
         width = int(self.np_random.uniform(-8, 2))
 
-        if side == 'left':
+        if side == "left":
             x = width
-        elif side == 'right':
+        elif side == "right":
             x = self._width - width
 
         self.obstacle = SideObstacle(world=self, position=(x, self._height / 2))
@@ -631,13 +642,13 @@ class SingleInvaderSpaceInvadersWorld(SpaceInvadersWorld):
     invader_class = CrossScreenMovingInvader
     invaders_per_row = 1
     parameters_invader_missile = {
-        'class': InvaderMissile,
+        "class": InvaderMissile,
         # Firing rate (in steps).
-        'fire_rate': 10,
+        "fire_rate": 10,
         # Maximum number of missiles on screen.
-        'max_missiles': 20,
+        "max_missiles": 20,
         # Missile impulse.
-        'missile_impulse': 100,
+        "missile_impulse": 100,
     }
 
     def initial_invader_row(self):
@@ -658,7 +669,7 @@ class SingleInvaderSpaceInvadersWorld(SpaceInvadersWorld):
 
     def initial_shield_configuration(self):
         return [
-            {'health': np.inf, 'position': (4 * self._width // 5, 200)},
+            {"health": np.inf, "position": (4 * self._width // 5, 200)},
         ]
 
 
@@ -666,7 +677,7 @@ class WhiteShield(Shield):
     """White shield for the player."""
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('color', (255, 255, 255))
+        kwargs.setdefault("color", (255, 255, 255))
         super(WhiteShield, self).__init__(*args, **kwargs)
 
 
@@ -674,7 +685,7 @@ class WhiteLeftRightMovingInvader(LeftRightMovingInvader):
     """White invader which moves left and right."""
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('color', (255, 255, 255))
+        kwargs.setdefault("color", (255, 255, 255))
         super(WhiteLeftRightMovingInvader, self).__init__(*args, **kwargs)
 
 
@@ -713,14 +724,16 @@ class RandomScaledSpaceInvadersWorld(SpaceInvadersWorld):
 
     def reset_world(self):
         super(RandomScaledSpaceInvadersWorld, self).reset_world()
-        self.scale = self.np_random.uniform(self.scale_range_start, self.scale_range_end)
+        self.scale = self.np_random.uniform(
+            self.scale_range_start, self.scale_range_end
+        )
 
     @property
     def parameters(self):
         parameters = super(RandomScaledSpaceInvadersWorld, self).parameters
-        parameters.update({
-            'scale': self.scale,
-        })
+        parameters.update(
+            {"scale": self.scale,}
+        )
         return parameters
 
 
@@ -728,9 +741,11 @@ class ScaledSetASpaceInvadersWorld(RandomScaledSpaceInvadersWorld):
     scale_range_start = 0.95
     scale_range_end = 1.0
 
+
 class ScaledSetBSpaceInvadersWorld(RandomScaledSpaceInvadersWorld):
     scale_range_start = 0.90
     scale_range_end = 0.95
+
 
 class RandomActionStrengthSpaceInvadersWorld(SpaceInvadersWorld):
     impulse_range_start = 30
@@ -738,7 +753,9 @@ class RandomActionStrengthSpaceInvadersWorld(SpaceInvadersWorld):
 
     def reset_world(self):
         super(RandomActionStrengthSpaceInvadersWorld, self).reset_world()
-        self._impulse_strength = self.np_random.uniform(self.impulse_range_start, self.impulse_range_end)
+        self._impulse_strength = self.np_random.uniform(
+            self.impulse_range_start, self.impulse_range_end
+        )
 
     def ship_impulse(self):
         return self._impulse_strength
@@ -746,9 +763,9 @@ class RandomActionStrengthSpaceInvadersWorld(SpaceInvadersWorld):
     @property
     def parameters(self):
         parameters = super(RandomActionStrengthSpaceInvadersWorld, self).parameters
-        parameters.update({
-            'ship_impulse': self._impulse_strength,
-        })
+        parameters.update(
+            {"ship_impulse": self._impulse_strength,}
+        )
         return parameters
 
 
@@ -763,30 +780,32 @@ class ActionStrengthSetBSpaceInvadersWorld(RandomActionStrengthSpaceInvadersWorl
 
 
 class MultiParameterSetASpaceInvadersWorld(
-        OffsetPlayerSetASpaceInvadersWorld,
-        ActionStrengthSetASpaceInvadersWorld,
-        #ScaledSetASpaceInvadersWorld,
-    ):
+    OffsetPlayerSetASpaceInvadersWorld,
+    ActionStrengthSetASpaceInvadersWorld,
+    # ScaledSetASpaceInvadersWorld,
+):
     """
     Parameters (all from set A):
       - player offset
       - action strength
       - scale (NOTE: removed)
     """
+
     pass
 
 
 class MultiParameterSetBSpaceInvadersWorld(
-        OffsetPlayerSetBSpaceInvadersWorld,
-        ActionStrengthSetBSpaceInvadersWorld,
-        #ScaledSetBSpaceInvadersWorld,
-    ):
+    OffsetPlayerSetBSpaceInvadersWorld,
+    ActionStrengthSetBSpaceInvadersWorld,
+    # ScaledSetBSpaceInvadersWorld,
+):
     """
     Parameters (all from set B):
       - player offset
       - action strength
       - scale (NOTE: removed)
     """
+
     pass
 
 
@@ -794,48 +813,46 @@ class SpaceInvaders(GymEnvironment):
     """Space invaders Gym environment."""
 
     worlds = {
-        'baseline': SpaceInvadersWorld,
-        'single_line': SingleLineSpaceInvadersWorld,
-        'inf_shields': InfiniteShieldsSpaceInvadersWorld,
-        'offset_player': OffsetPlayerSpaceInvadersWorld,
-        'offset_player150': OffsetPlayer150SpaceInvadersWorld,
-        'random_offset_player': RandomOffsetPlayerSpaceInvadersWorld,
-        'side_obstacle': SideObstacleSpaceInvadersWorld,
-        'left_side_obstacle': LeftSideObstacleSpaceInvadersWorld,
-        'right_side_obstacle': RightSideObstacleSpaceInvadersWorld,
-        'random_side_obstacle': RandomSideObstacleSpaceInvadersWorld,
-        'single_invader': SingleInvaderSpaceInvadersWorld,
-        'one_color': OneColorSpaceInvadersWorld,
-        'scaled_80': Scaled80SpaceInvadersWorld,
-        'scaled_90': Scaled90SpaceInvadersWorld,
-        'scaled_95': Scaled95SpaceInvadersWorld,
-        'scaled_99': Scaled99SpaceInvadersWorld,
-        'random_scaled': RandomScaledSpaceInvadersWorld,
-
-        'offset_player_set_a': OffsetPlayerSetASpaceInvadersWorld,
-        'offset_player_set_b': OffsetPlayerSetBSpaceInvadersWorld,
-        'scaled_set_a': ScaledSetASpaceInvadersWorld,
-        'scaled_set_b': ScaledSetBSpaceInvadersWorld,
-        'action_strength_set_a': ActionStrengthSetASpaceInvadersWorld,
-        'action_strength_set_b': ActionStrengthSetBSpaceInvadersWorld,
-
-        'multi_parameter_set_a': MultiParameterSetASpaceInvadersWorld,
-        'multi_parameter_set_b': MultiParameterSetBSpaceInvadersWorld,
+        "baseline": SpaceInvadersWorld,
+        "single_line": SingleLineSpaceInvadersWorld,
+        "inf_shields": InfiniteShieldsSpaceInvadersWorld,
+        "offset_player": OffsetPlayerSpaceInvadersWorld,
+        "offset_player150": OffsetPlayer150SpaceInvadersWorld,
+        "random_offset_player": RandomOffsetPlayerSpaceInvadersWorld,
+        "side_obstacle": SideObstacleSpaceInvadersWorld,
+        "left_side_obstacle": LeftSideObstacleSpaceInvadersWorld,
+        "right_side_obstacle": RightSideObstacleSpaceInvadersWorld,
+        "random_side_obstacle": RandomSideObstacleSpaceInvadersWorld,
+        "single_invader": SingleInvaderSpaceInvadersWorld,
+        "one_color": OneColorSpaceInvadersWorld,
+        "scaled_80": Scaled80SpaceInvadersWorld,
+        "scaled_90": Scaled90SpaceInvadersWorld,
+        "scaled_95": Scaled95SpaceInvadersWorld,
+        "scaled_99": Scaled99SpaceInvadersWorld,
+        "random_scaled": RandomScaledSpaceInvadersWorld,
+        "offset_player_set_a": OffsetPlayerSetASpaceInvadersWorld,
+        "offset_player_set_b": OffsetPlayerSetBSpaceInvadersWorld,
+        "scaled_set_a": ScaledSetASpaceInvadersWorld,
+        "scaled_set_b": ScaledSetBSpaceInvadersWorld,
+        "action_strength_set_a": ActionStrengthSetASpaceInvadersWorld,
+        "action_strength_set_b": ActionStrengthSetBSpaceInvadersWorld,
+        "multi_parameter_set_a": MultiParameterSetASpaceInvadersWorld,
+        "multi_parameter_set_b": MultiParameterSetBSpaceInvadersWorld,
     }
 
     def get_action_meanings(self):
         return [
-            'NOOP',
-            'LEFT',
-            'RIGHT',
-            'FIRE',
+            "NOOP",
+            "LEFT",
+            "RIGHT",
+            "FIRE",
         ]
 
     def get_keys_to_action(self):
         return {
             (): 0,
-            (ord('a'),): 1,
-            (ord('d'),): 2,
-            (ord('s'),): 3,
-            (ord('a'), ord('d')): 0,
+            (ord("a"),): 1,
+            (ord("d"),): 2,
+            (ord("s"),): 3,
+            (ord("a"), ord("d")): 0,
         }

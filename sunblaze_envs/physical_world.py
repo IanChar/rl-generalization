@@ -9,14 +9,14 @@ from gym.utils import seeding
 
 from .base import BaseGymEnvironment
 
-ASSET_PATH = os.path.join(os.path.dirname(__file__), 'assets', 'physical_world')
+ASSET_PATH = os.path.join(os.path.dirname(__file__), "assets", "physical_world")
 
 
 class PhysicalObject(cocos.sprite.Sprite):
     """Sprite which is backed by a physical object."""
 
     def __init__(self, image, **kwargs):
-        world = kwargs.pop('world', None)
+        world = kwargs.pop("world", None)
         super(PhysicalObject, self).__init__(image, **kwargs)
 
         if world is not None:
@@ -38,7 +38,7 @@ class PhysicalObject(cocos.sprite.Sprite):
     @property
     def physical_position(self):
         """Returns physical object position."""
-        if getattr(self, '_body', None) is not None:
+        if getattr(self, "_body", None) is not None:
             return self._body.position
 
         return (
@@ -49,7 +49,7 @@ class PhysicalObject(cocos.sprite.Sprite):
     @property
     def physical_rotation(self):
         """Returns physical object rotation (in radians)."""
-        if getattr(self, '_body', None) is not None:
+        if getattr(self, "_body", None) is not None:
             return self._body.angle
 
         return -np.deg2rad(self.rotation)
@@ -57,7 +57,7 @@ class PhysicalObject(cocos.sprite.Sprite):
     @property
     def visual_position(self):
         """Return visual object position."""
-        if getattr(self, '_body', None) is None:
+        if getattr(self, "_body", None) is None:
             return self.position
 
         return self._body.position * self._world.physical_scale
@@ -65,7 +65,7 @@ class PhysicalObject(cocos.sprite.Sprite):
     @property
     def visual_rotation(self):
         """Return visual object rotation (in degrees)."""
-        if getattr(self, '_body', None) is None:
+        if getattr(self, "_body", None) is None:
             return self.rotation
 
         return -np.rad2deg(self._body.angle)
@@ -142,6 +142,7 @@ class ContactFilter(box_2d.b2ContactFilter):
 
 class PhysicalWorld(cocos.layer.Layer):
     """Physical world, which may be rendered."""
+
     fps = 50
     # Ratio between physical size and graphics size.
     physical_scale = 32.0
@@ -155,9 +156,7 @@ class PhysicalWorld(cocos.layer.Layer):
         self._contacts = ContactListener()
         self._filter = ContactFilter()
         self._engine = box_2d.b2World(
-            gravity=(0, 0),
-            contactListener=self._contacts,
-            contactFilter=self._filter,
+            gravity=(0, 0), contactListener=self._contacts, contactFilter=self._filter,
         )
         self._width, self._height = width, height
         self._destroy_queue = []
@@ -223,7 +222,7 @@ class PhysicalWorld(cocos.layer.Layer):
     def step(self):
         """Perform one simulation step."""
         self.process_destroy_queue()
-        self._engine.Step(1.0 / self.fps, 6*30, 2*30)
+        self._engine.Step(1.0 / self.fps, 6 * 30, 2 * 30)
         self._engine.ClearForces()
 
         # Step all objects.
@@ -236,13 +235,13 @@ class PhysicalWorld(cocos.layer.Layer):
         self.walk(step_node)
 
 
-class PhysicalEnvironment():
+class PhysicalEnvironment:
     """Physical environment based on Box2D/Cocos2D."""
 
     def __init__(self, world):
         width = 640
         height = 480
-        window = getattr(cocos.director.director, 'window', None)
+        window = getattr(cocos.director.director, "window", None)
         if window is None:
             # Update resource path.
             pyglet.resource.path = [ASSET_PATH]
@@ -256,8 +255,7 @@ class PhysicalEnvironment():
         self._height = height
         self._world = world(width=width, height=height)
         self._scene = cocos.scene.Scene(
-            cocos.layer.ColorLayer(0, 0, 0, 255),
-            self._world,
+            cocos.layer.ColorLayer(0, 0, 0, 255), self._world,
         )
 
     @property
@@ -293,21 +291,21 @@ class PhysicalEnvironment():
         """Seed random number generator."""
         return self._world.seed(seed)
 
-    def render(self, mode='human'):
+    def render(self, mode="human"):
         """Render the environment."""
         if cocos.director.director.scene != self._scene:
             cocos.director.director._set_scene(self._scene)
 
         self._window.switch_to()
         self._window.dispatch_events()
-        self._window.dispatch_event('on_draw')
+        self._window.dispatch_event("on_draw")
 
-        if mode == 'human':
+        if mode == "human":
             self._window.flip()
-        elif mode == 'rgb_array':
+        elif mode == "rgb_array":
             color_buffer = pyglet.image.get_buffer_manager().get_color_buffer()
             image_data = color_buffer.get_image_data()
-            data = np.fromstring(image_data.data, dtype=np.uint8, sep='')
+            data = np.fromstring(image_data.data, dtype=np.uint8, sep="")
             data = data.reshape(color_buffer.height, color_buffer.width, 4)
             data = data[::-1, :, 0:3]
             return data
@@ -315,18 +313,20 @@ class PhysicalEnvironment():
 
 class GymEnvironment(BaseGymEnvironment):
     metadata = {
-        'render.modes': ['human', 'rgb_array'],
-        'video.frames_per_second': 50,
+        "render.modes": ["human", "rgb_array"],
+        "video.frames_per_second": 50,
     }
     worlds = None
 
-    def __init__(self, obs_type='image', frameskip=4, world='baseline'):
+    def __init__(self, obs_type="image", frameskip=4, world="baseline"):
         self._env = PhysicalEnvironment(world=self.worlds[world])
         self._world = world
         self.action_space = spaces.Discrete(self._env.world.n_actions)
 
-        if obs_type == 'image':
-            self.observation_space = spaces.Box(low=0, high=255, shape=(self._env.height, self._env.width, 3))
+        if obs_type == "image":
+            self.observation_space = spaces.Box(
+                low=0, high=255, shape=(self._env.height, self._env.width, 3)
+            )
         else:
             raise error.Error("Unrecognized observation type: {}".format(obs_type))
 
@@ -335,17 +335,17 @@ class GymEnvironment(BaseGymEnvironment):
 
     def __getstate__(self):
         return {
-            'obs_type': self._obs_type,
-            'frameskip': self._frameskip,
-            'world': self._world,
+            "obs_type": self._obs_type,
+            "frameskip": self._frameskip,
+            "world": self._world,
         }
 
     def __setstate__(self, state):
         self.__init__(**state)
 
     def _get_observation(self):
-        if self._obs_type == 'image':
-            return self._env.render(mode='rgb_array')
+        if self._obs_type == "image":
+            return self._env.render(mode="rgb_array")
 
         raise NotImplementedError
 
@@ -368,10 +368,10 @@ class GymEnvironment(BaseGymEnvironment):
 
         observation = self._get_observation()
         reward = self._env.world.score - score
-        info = {'lives': self._env.world.lives}
+        info = {"lives": self._env.world.lives}
         return observation, reward, terminal, info
 
-    def _render(self, mode='human', close=False):
+    def _render(self, mode="human", close=False):
         if close:
             return
         return self._env.render(mode)

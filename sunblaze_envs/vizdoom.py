@@ -10,17 +10,25 @@ import numpy as np
 import vizdoom
 import omg
 
-ASSET_PATH = os.path.join(os.path.dirname(__file__), 'assets', 'vizdoom')
+ASSET_PATH = os.path.join(os.path.dirname(__file__), "assets", "vizdoom")
 
 # Texture set A.
-TEXTURES_SET_A = [line.strip() for line in open(os.path.join(ASSET_PATH, 'texture_set_a.txt'))]
+TEXTURES_SET_A = [
+    line.strip() for line in open(os.path.join(ASSET_PATH, "texture_set_a.txt"))
+]
 # Texture set B.
-TEXTURES_SET_B = [line.strip() for line in open(os.path.join(ASSET_PATH, 'texture_set_b.txt'))]
+TEXTURES_SET_B = [
+    line.strip() for line in open(os.path.join(ASSET_PATH, "texture_set_b.txt"))
+]
 
 # Thing set A.
-THINGS_SET_A = [int(line.strip()) for line in open(os.path.join(ASSET_PATH, 'thing_set_a.txt'))]
+THINGS_SET_A = [
+    int(line.strip()) for line in open(os.path.join(ASSET_PATH, "thing_set_a.txt"))
+]
 # Thing set B.
-THINGS_SET_B = [int(line.strip()) for line in open(os.path.join(ASSET_PATH, 'thing_set_b.txt'))]
+THINGS_SET_B = [
+    int(line.strip()) for line in open(os.path.join(ASSET_PATH, "thing_set_b.txt"))
+]
 
 # Map cache to avoid re-parsing the map multiple times.
 _MAP_CACHE = {}
@@ -34,8 +42,8 @@ def sampler_with_map_editor(sampler):
 
     def wrapper(env, config):
         # Load source WAD.
-        scenario = os.path.join(ASSET_PATH, config['scenario'])
-        map_name = config.get('map', 'MAP01').upper()
+        scenario = os.path.join(ASSET_PATH, config["scenario"])
+        map_name = config.get("map", "MAP01").upper()
         cache_key = (scenario, map_name)
 
         if cache_key not in _MAP_CACHE:
@@ -50,7 +58,7 @@ def sampler_with_map_editor(sampler):
         sampler(env, config, editor)
 
         # Create temporary WAD and write updated level there.
-        updated_wad = tempfile.mktemp(suffix='.wad')
+        updated_wad = tempfile.mktemp(suffix=".wad")
         editor.save(updated_wad)
 
         return updated_wad
@@ -117,53 +125,55 @@ def sample_things(things, modify_things):
 
 class VizDoomEnvironment(gym.Env):
     metadata = {
-        'render.modes': ['rgb_array'],
-        'video.frames_per_second': 35,
+        "render.modes": ["rgb_array"],
+        "video.frames_per_second": 35,
     }
     # Scenario definitions. Within each scenario definition, configuration is inherited
     # from the baseline variant to avoid repetition.
     scenarios = {
-        'basic': {
-            'baseline': {
-                'scenario': 'basic.wad',
-                'living_reward': 1,
-                'death_penalty': 0,
-                'reward': 'health',
+        "basic": {
+            "baseline": {
+                "scenario": "basic.wad",
+                "living_reward": 1,
+                "death_penalty": 0,
+                "reward": "health",
             },
-            'floor_ceiling_flipped': {'scenario': 'basic_floor_ceiling_flipped.wad'},
-            'torches': {'scenario': 'basic_torches.wad'},
-            'random_textures_set_a': {'sampler': sample_textures(TEXTURES_SET_A)},
-            'random_textures_set_b': {'sampler': sample_textures(TEXTURES_SET_B)},
-            'random_things_set_a': {
-                'scenario': 'basic_torches.wad',
-                'sampler': sample_things(THINGS_SET_A, modify_things=[56]),
+            "floor_ceiling_flipped": {"scenario": "basic_floor_ceiling_flipped.wad"},
+            "torches": {"scenario": "basic_torches.wad"},
+            "random_textures_set_a": {"sampler": sample_textures(TEXTURES_SET_A)},
+            "random_textures_set_b": {"sampler": sample_textures(TEXTURES_SET_B)},
+            "random_things_set_a": {
+                "scenario": "basic_torches.wad",
+                "sampler": sample_things(THINGS_SET_A, modify_things=[56]),
             },
-            'random_things_set_b': {
-                'scenario': 'basic_torches.wad',
-                'sampler': sample_things(THINGS_SET_B, modify_things=[56]),
+            "random_things_set_b": {
+                "scenario": "basic_torches.wad",
+                "sampler": sample_things(THINGS_SET_B, modify_things=[56]),
             },
         },
-        'navigation': {
-            'baseline': {
-                'scenario': 'navigation.wad',
-                'living_reward': 1,
-                'death_penalty': 0,
-                'reward': 'health',
+        "navigation": {
+            "baseline": {
+                "scenario": "navigation.wad",
+                "living_reward": 1,
+                "death_penalty": 0,
+                "reward": "health",
             },
-            'new_layout': {'scenario': 'navigation_new_layout.wad'},
-            'floor_ceiling_flipped': {'scenario': 'navigation_floor_ceiling_flipped.wad'},
-            'torches': {'scenario': 'navigation_torches.wad'},
-            'random_textures_set_a': {'sampler': sample_textures(TEXTURES_SET_A)},
-            'random_textures_set_b': {'sampler': sample_textures(TEXTURES_SET_B)},
-            'random_things_set_a': {
-                'scenario': 'navigation_torches.wad',
-                'sampler': sample_things(THINGS_SET_A, modify_things=[56]),
+            "new_layout": {"scenario": "navigation_new_layout.wad"},
+            "floor_ceiling_flipped": {
+                "scenario": "navigation_floor_ceiling_flipped.wad"
             },
-            'random_things_set_b': {
-                'scenario': 'navigation_torches.wad',
-                'sampler': sample_things(THINGS_SET_B, modify_things=[56]),
+            "torches": {"scenario": "navigation_torches.wad"},
+            "random_textures_set_a": {"sampler": sample_textures(TEXTURES_SET_A)},
+            "random_textures_set_b": {"sampler": sample_textures(TEXTURES_SET_B)},
+            "random_things_set_a": {
+                "scenario": "navigation_torches.wad",
+                "sampler": sample_things(THINGS_SET_A, modify_things=[56]),
             },
-        }
+            "random_things_set_b": {
+                "scenario": "navigation_torches.wad",
+                "sampler": sample_things(THINGS_SET_B, modify_things=[56]),
+            },
+        },
     }
     # Available buttons.
     buttons = [
@@ -182,7 +192,7 @@ class VizDoomEnvironment(gym.Env):
         (vizdoom.Button.TURN_LEFT, vizdoom.Button.TURN_RIGHT),
     ]
 
-    def __init__(self, scenario, variant, obs_type='image', frameskip=4):
+    def __init__(self, scenario, variant, obs_type="image", frameskip=4):
         if scenario not in self.scenarios:
             raise error.Error("Unsupported scenario: {}".format(scenario))
 
@@ -191,13 +201,15 @@ class VizDoomEnvironment(gym.Env):
 
         # Generate config (extend from baseline).
         config = {}
-        config.update(self.scenarios[scenario]['baseline'])
+        config.update(self.scenarios[scenario]["baseline"])
         config.update(self.scenarios[scenario][variant])
         self._config = config
 
         self._vizdoom = vizdoom.DoomGame()
-        self._vizdoom.set_doom_scenario_path(os.path.join(ASSET_PATH, config['scenario']))
-        self._vizdoom.set_doom_map(config.get('map', 'MAP01'))
+        self._vizdoom.set_doom_scenario_path(
+            os.path.join(ASSET_PATH, config["scenario"])
+        )
+        self._vizdoom.set_doom_map(config.get("map", "MAP01"))
         self._vizdoom.set_screen_resolution(vizdoom.ScreenResolution.RES_640X480)
         self._vizdoom.set_screen_format(vizdoom.ScreenFormat.BGR24)
         self._vizdoom.set_mode(vizdoom.Mode.PLAYER)
@@ -220,11 +232,11 @@ class VizDoomEnvironment(gym.Env):
         self._vizdoom.set_sound_enabled(False)
 
         # Rewards.
-        self._vizdoom.set_living_reward(config.get('living_reward', 1))
-        self._vizdoom.set_death_penalty(config.get('death_penalty', 100))
+        self._vizdoom.set_living_reward(config.get("living_reward", 1))
+        self._vizdoom.set_death_penalty(config.get("death_penalty", 100))
 
         # Duration.
-        self._vizdoom.set_episode_timeout(config.get('episode_timeout', 2100))
+        self._vizdoom.set_episode_timeout(config.get("episode_timeout", 2100))
 
         # Generate action space from buttons.
         for button in self.buttons:
@@ -235,7 +247,10 @@ class VizDoomEnvironment(gym.Env):
             # Exclude any pairs where opposite buttons are pressed.
             valid = True
             for a, b in self.opposite_button_pairs:
-                if combination[self.buttons.index(a)] and combination[self.buttons.index(b)]:
+                if (
+                    combination[self.buttons.index(a)]
+                    and combination[self.buttons.index(b)]
+                ):
                     valid = False
                     break
 
@@ -244,8 +259,10 @@ class VizDoomEnvironment(gym.Env):
 
         self.action_space = spaces.Discrete(len(self._action_button_map))
 
-        if obs_type == 'image':
-            self.observation_space = spaces.Box(low=0, high=255, shape=(self._height, self._width, self._depth))
+        if obs_type == "image":
+            self.observation_space = spaces.Box(
+                low=0, high=255, shape=(self._height, self._width, self._depth)
+            )
         else:
             raise error.Error("Unrecognized observation type: {}".format(obs_type))
 
@@ -259,10 +276,10 @@ class VizDoomEnvironment(gym.Env):
 
     def __getstate__(self):
         return {
-            'scenario': self._scenario,
-            'variant': self._variant,
-            'obs_type': self._obs_type,
-            'frameskip': self._frameskip,
+            "scenario": self._scenario,
+            "variant": self._variant,
+            "obs_type": self._obs_type,
+            "frameskip": self._frameskip,
         }
 
     def __setstate__(self, state):
@@ -270,13 +287,13 @@ class VizDoomEnvironment(gym.Env):
 
     def _seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
-        self._vizdoom.set_seed(seed % 2**32)
+        self._vizdoom.set_seed(seed % 2 ** 32)
         return [seed]
 
     def _get_observation(self):
         state = self._vizdoom.get_state()
 
-        if self._obs_type == 'image':
+        if self._obs_type == "image":
             if not state:
                 return np.zeros([self._height, self._width, self._depth])
 
@@ -286,7 +303,7 @@ class VizDoomEnvironment(gym.Env):
 
     def _reset(self):
         # Sample scenario when configured.
-        sampler = self._config.get('sampler', None)
+        sampler = self._config.get("sampler", None)
         if sampler:
             #  Remove previous temporary scenario.
             if self._temporary_scenario:
@@ -310,8 +327,8 @@ class VizDoomEnvironment(gym.Env):
 
     def _get_state_variables(self):
         return {
-            'health': self._vizdoom.get_game_variable(vizdoom.GameVariable.HEALTH),
-            'frags': self._vizdoom.get_game_variable(vizdoom.GameVariable.FRAGCOUNT),
+            "health": self._vizdoom.get_game_variable(vizdoom.GameVariable.HEALTH),
+            "frags": self._vizdoom.get_game_variable(vizdoom.GameVariable.FRAGCOUNT),
         }
 
     def _step(self, action):
@@ -322,8 +339,8 @@ class VizDoomEnvironment(gym.Env):
         observation = self._get_observation()
         info = self._get_state_variables()
 
-        reward_value = self._config.get('reward', 'reward')
-        if reward_value == 'reward':
+        reward_value = self._config.get("reward", "reward")
+        if reward_value == "reward":
             reward = scenario_reward
         else:
             reward = info[reward_value] - previous_info[reward_value]

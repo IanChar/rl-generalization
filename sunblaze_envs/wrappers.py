@@ -20,7 +20,9 @@ def ActionDelayWrapper(delay_range_start, delay_range_end):
 
         def _reset(self):
             self._action_delay = np.random.randint(delay_range_start, delay_range_end)
-            self._action_buffer = collections.deque([0 for _ in range(self._action_delay)])
+            self._action_buffer = collections.deque(
+                [0 for _ in range(self._action_delay)]
+            )
             return self.env.reset()
 
     return ActionDelayWrapper

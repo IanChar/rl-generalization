@@ -9,24 +9,24 @@ from .physical_world import PhysicalObject, PhysicalWorld, GymEnvironment
 
 class Ball(PhysicalObject):
     """Ball object."""
-    asset = 'ball.png'
+
+    asset = "ball.png"
     max_speed = 9.0
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('scale', 0.25)
-        kwargs.setdefault('color', (208, 33, 82))
+        kwargs.setdefault("scale", 0.25)
+        kwargs.setdefault("color", (208, 33, 82))
         super(Ball, self).__init__(self.asset, *args, **kwargs)
 
     def create_physical_entity(self):
         body = self._engine.CreateDynamicBody(
-            position=self.physical_position,
-            fixedRotation=True
+            position=self.physical_position, fixedRotation=True
         )
         body.CreateCircleFixture(
             radius=(self.width / 2) / self._world.physical_scale,
             density=1.0,
             friction=0.0,
-            restitution=1.0
+            restitution=1.0,
         )
         return body
 
@@ -48,10 +48,11 @@ class Ball(PhysicalObject):
 
 class Paddle(PhysicalObject):
     """Paddle object."""
-    asset = 'paddle.png'
+
+    asset = "paddle.png"
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('color', (255, 168, 0))
+        kwargs.setdefault("color", (255, 168, 0))
         super(Paddle, self).__init__(self.asset, *args, **kwargs)
 
     def create_physical_entity(self):
@@ -59,16 +60,16 @@ class Paddle(PhysicalObject):
             position=self.physical_position,
             angle=self.physical_rotation,
             linearDamping=0.99,
-            fixedRotation=True
+            fixedRotation=True,
         )
         body.CreatePolygonFixture(
             box=(
                 (self.width / 2.0) / self._world.physical_scale,
-                (self.height / 2.0) / self._world.physical_scale
+                (self.height / 2.0) / self._world.physical_scale,
             ),
             density=1.0,
             friction=0.0,
-            restitution=0.0
+            restitution=0.0,
         )
 
         # Constrain paddle movements to X axis.
@@ -84,10 +85,10 @@ class Brick(PhysicalObject):
     """Brick object."""
 
     def __init__(self, *args, **kwargs):
-        self.row = kwargs.pop('row')
-        self.column = kwargs.pop('column')
-        kwargs['color'] = self.get_color()
-        super(Brick, self).__init__('brick.png', *args, **kwargs)
+        self.row = kwargs.pop("row")
+        self.column = kwargs.pop("column")
+        kwargs["color"] = self.get_color()
+        super(Brick, self).__init__("brick.png", *args, **kwargs)
 
     def get_color(self):
         """Brick color."""
@@ -126,11 +127,11 @@ class Brick(PhysicalObject):
         body.CreatePolygonFixture(
             box=(
                 (self.width / 2.0) / self._world.physical_scale,
-                (self.height / 2.0) / self._world.physical_scale
+                (self.height / 2.0) / self._world.physical_scale,
             ),
             density=1.0,
             friction=0.0,
-            restitution=self.get_restitution()
+            restitution=self.get_restitution(),
         )
 
         return body
@@ -177,7 +178,9 @@ class BreakoutWorld(PhysicalWorld):
         parent.add(self.ball)
 
         # Create paddle.
-        self.paddle = self.paddle_class(world=self, position=self.initial_paddle_position())
+        self.paddle = self.paddle_class(
+            world=self, position=self.initial_paddle_position()
+        )
         parent.add(self.paddle)
 
     @property
@@ -191,9 +194,9 @@ class BreakoutWorld(PhysicalWorld):
     @property
     def parameters(self):
         parameters = super(BreakoutWorld, self).parameters
-        parameters.update({
-            'world': 'breakout',
-        })
+        parameters.update(
+            {"world": "breakout",}
+        )
         return parameters
 
     def paddle_impulse(self):
@@ -207,10 +210,22 @@ class BreakoutWorld(PhysicalWorld):
             pass
         elif action == 1:
             # Move paddle left.
-            self.paddle.apply_impulse(((-self.paddle_impulse() / self.physical_scale) * self.paddle.body.mass, 0))
+            self.paddle.apply_impulse(
+                (
+                    (-self.paddle_impulse() / self.physical_scale)
+                    * self.paddle.body.mass,
+                    0,
+                )
+            )
         elif action == 2:
             # Move paddle right.
-            self.paddle.apply_impulse(((self.paddle_impulse() / self.physical_scale) * self.paddle.body.mass, 0))
+            self.paddle.apply_impulse(
+                (
+                    (self.paddle_impulse() / self.physical_scale)
+                    * self.paddle.body.mass,
+                    0,
+                )
+            )
 
     def initial_ball_position(self):
         """Initial ball position after reset."""
@@ -237,7 +252,9 @@ class BreakoutWorld(PhysicalWorld):
 
         for row in range(5):
             for column in range(self._width // dummy.width):
-                brick = self.brick_class(world=self, position=(brick_x, brick_y), row=row, column=column)
+                brick = self.brick_class(
+                    world=self, position=(brick_x, brick_y), row=row, column=column
+                )
                 self._batch.add(brick)
 
                 brick_x += dummy.width
@@ -271,7 +288,7 @@ class BreakoutWorld(PhysicalWorld):
         self.paddle = self.paddle_class(
             world=self,
             position=self.initial_paddle_position(),
-            rotation=self.initial_paddle_rotation()
+            rotation=self.initial_paddle_rotation(),
         )
         self._batch.add(self.paddle)
 
@@ -280,10 +297,11 @@ class BreakoutWorld(PhysicalWorld):
         self.ball.stop_body()
         self.ball.set_body_position(self.initial_ball_position())
         self.ball.apply_impulse(
-            (150.0 / self.physical_scale) * self.ball.body.mass * np.asarray([
-                self.np_random.uniform(-0.3, 0.3),
-                -self.np_random.uniform(0.6, 1.0),
-            ])
+            (150.0 / self.physical_scale)
+            * self.ball.body.mass
+            * np.asarray(
+                [self.np_random.uniform(-0.3, 0.3), -self.np_random.uniform(0.6, 1.0),]
+            )
         )
 
     def step(self):
@@ -324,9 +342,9 @@ class OffsetPaddleBreakoutWorld(BreakoutWorld):
     @property
     def parameters(self):
         parameters = super(OffsetPaddleBreakoutWorld, self).parameters
-        parameters.update({
-            'paddle_offset': self.paddle_offset,
-        })
+        parameters.update(
+            {"paddle_offset": self.paddle_offset,}
+        )
         return parameters
 
 
@@ -356,22 +374,24 @@ class RandomOffsetPaddleBreakoutWorld(BreakoutWorld):
 
     def initial_paddle_position(self):
         """Initial paddle position after reset."""
-        self._paddle_offset = int(self.np_random.uniform(self.offset_range_start, self.offset_range_end))
+        self._paddle_offset = int(
+            self.np_random.uniform(self.offset_range_start, self.offset_range_end)
+        )
         return (self._width / 2, self._paddle_offset)
 
     @property
     def parameters(self):
         parameters = super(RandomOffsetPaddleBreakoutWorld, self).parameters
-        parameters.update({
-            'paddle_offset': self._paddle_offset,
-        })
+        parameters.update(
+            {"paddle_offset": self._paddle_offset,}
+        )
         return parameters
 
 
 class OffsetPaddleSetABreakoutWorld(RandomOffsetPaddleBreakoutWorld):
     warnings.warn(
         "This env. parameter was dropped and should no longer be used.",
-        DeprecationWarning
+        DeprecationWarning,
     )
     offset_range_start = 25
     offset_range_end = 75
@@ -380,7 +400,7 @@ class OffsetPaddleSetABreakoutWorld(RandomOffsetPaddleBreakoutWorld):
 class OffsetPaddleSetBBreakoutWorld(RandomOffsetPaddleBreakoutWorld):
     warnings.warn(
         "This env. parameter was dropped and should no longer be used.",
-        DeprecationWarning
+        DeprecationWarning,
     )
     offset_range_start = 20
     offset_range_end = 125
@@ -405,19 +425,19 @@ class Obstacle(PhysicalObject):
     """Obstacle object."""
 
     def __init__(self, *args, **kwargs):
-        kwargs['color'] = (80, 80, 80)
-        super(Obstacle, self).__init__('obstacle.png', *args, **kwargs)
+        kwargs["color"] = (80, 80, 80)
+        super(Obstacle, self).__init__("obstacle.png", *args, **kwargs)
 
     def create_physical_entity(self):
         body = self._engine.CreateStaticBody(position=self.physical_position)
         body.CreatePolygonFixture(
             box=(
                 (self.width / 2.0) / self._world.physical_scale,
-                (self.height / 2.0) / self._world.physical_scale
+                (self.height / 2.0) / self._world.physical_scale,
             ),
             density=10.0,
             friction=0.0,
-            restitution=0.0
+            restitution=0.0,
         )
 
         return body
@@ -439,12 +459,12 @@ class SideObstacle(PhysicalObject):
     """Side obstacle object."""
 
     def __init__(self, *args, **kwargs):
-        image = pyglet.resource.image('side_obstacle.png')
-        width = kwargs.pop('width', None)
+        image = pyglet.resource.image("side_obstacle.png")
+        width = kwargs.pop("width", None)
         if width is not None:
             image = image.get_region(0, 0, width, image.height)
 
-        kwargs['color'] = (80, 80, 80)
+        kwargs["color"] = (80, 80, 80)
         super(SideObstacle, self).__init__(image, *args, **kwargs)
 
     def create_physical_entity(self):
@@ -452,11 +472,11 @@ class SideObstacle(PhysicalObject):
         body.CreatePolygonFixture(
             box=(
                 (self.width / 2.0) / self._world.physical_scale,
-                (self.height / 2.0) / self._world.physical_scale
+                (self.height / 2.0) / self._world.physical_scale,
             ),
             density=10.0,
             friction=0.0,
-            restitution=0.0
+            restitution=0.0,
         )
 
         return body
@@ -469,7 +489,9 @@ class SideObstacleBreakoutWorld(BreakoutWorld):
         self.obstacle1 = SideObstacle(world=self, position=(10, self._height / 2))
         parent.add(self.obstacle1, z=1)
 
-        self.obstacle2 = SideObstacle(world=self, position=(self._width - 10, self._height / 2))
+        self.obstacle2 = SideObstacle(
+            world=self, position=(self._width - 10, self._height / 2)
+        )
         parent.add(self.obstacle2, z=1)
 
 
@@ -485,7 +507,9 @@ class RightSideObstacleBreakoutWorld(BreakoutWorld):
     def create_world(self, parent):
         super(RightSideObstacleBreakoutWorld, self).create_world(parent)
 
-        self.obstacle = SideObstacle(world=self, position=(self._width - 10, self._height / 2))
+        self.obstacle = SideObstacle(
+            world=self, position=(self._width - 10, self._height / 2)
+        )
         parent.add(self.obstacle, z=1)
 
 
@@ -500,18 +524,24 @@ class RandomSideObstacleBreakoutWorld(BreakoutWorld):
 
     def reset_obstacle(self):
         """Reset obstacle width and position."""
-        if hasattr(self, 'obstacle'):
+        if hasattr(self, "obstacle"):
             self.obstacle.kill()
 
-        side = self.np_random.choice(['left', 'right'])
-        width = int(self.np_random.uniform(self.side_obstacle_width_range_start, self.side_obstacle_width_range_end))
+        side = self.np_random.choice(["left", "right"])
+        width = int(
+            self.np_random.uniform(
+                self.side_obstacle_width_range_start, self.side_obstacle_width_range_end
+            )
+        )
 
-        if side == 'left':
+        if side == "left":
             x = width / 2
-        elif side == 'right':
+        elif side == "right":
             x = self._width - width / 2
 
-        self.obstacle = SideObstacle(world=self, position=(x, self._height / 2), width=width)
+        self.obstacle = SideObstacle(
+            world=self, position=(x, self._height / 2), width=width
+        )
         self._batch.add(self.obstacle, z=1)
 
         self._obstacle_side = side
@@ -520,10 +550,12 @@ class RandomSideObstacleBreakoutWorld(BreakoutWorld):
     @property
     def parameters(self):
         parameters = super(RandomSideObstacleBreakoutWorld, self).parameters
-        parameters.update({
-            'obstacle_side': self._obstacle_side,
-            'obstacle_width': self._obstacle_width,
-        })
+        parameters.update(
+            {
+                "obstacle_side": self._obstacle_side,
+                "obstacle_width": self._obstacle_width,
+            }
+        )
         return parameters
 
 
@@ -539,7 +571,8 @@ class SideObstacleSetBBreakoutWorld(RandomSideObstacleBreakoutWorld):
 
 class SmallPaddle(Paddle):
     """Small paddle object."""
-    asset = 'small_paddle.png'
+
+    asset = "small_paddle.png"
 
 
 class SmallPaddleBreakoutWorld(BreakoutWorld):
@@ -548,7 +581,8 @@ class SmallPaddleBreakoutWorld(BreakoutWorld):
 
 class Small10Paddle(Paddle):
     """10% smaller paddle object."""
-    asset = 'small10_paddle.png'
+
+    asset = "small10_paddle.png"
 
 
 class Small10PaddleBreakoutWorld(BreakoutWorld):
@@ -557,7 +591,8 @@ class Small10PaddleBreakoutWorld(BreakoutWorld):
 
 class Small20Paddle(Paddle):
     """20% smaller paddle object."""
-    asset = 'small20_paddle.png'
+
+    asset = "small20_paddle.png"
 
 
 class Small20PaddleBreakoutWorld(BreakoutWorld):
@@ -566,7 +601,8 @@ class Small20PaddleBreakoutWorld(BreakoutWorld):
 
 class Small30Paddle(Paddle):
     """30% smaller paddle object."""
-    asset = 'small30_paddle.png'
+
+    asset = "small30_paddle.png"
 
 
 class Small30PaddleBreakoutWorld(BreakoutWorld):
@@ -576,14 +612,16 @@ class Small30PaddleBreakoutWorld(BreakoutWorld):
 class RandomSmallPaddleBreakoutWorld(BreakoutWorld):
     @property
     def paddle_class(self):
-        return self.np_random.choice([Paddle, Small10Paddle, Small20Paddle, Small30Paddle])
+        return self.np_random.choice(
+            [Paddle, Small10Paddle, Small20Paddle, Small30Paddle]
+        )
 
 
 class BigBall(Ball):
     """A bigger ball object."""
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('scale', 0.5)
+        kwargs.setdefault("scale", 0.5)
         super(BigBall, self).__init__(*args, **kwargs)
 
 
@@ -595,7 +633,7 @@ class HugeBall(Ball):
     """A huge ball object."""
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('scale', 0.75)
+        kwargs.setdefault("scale", 0.75)
         super(HugeBall, self).__init__(*args, **kwargs)
 
 
@@ -605,21 +643,21 @@ class HugeBallBreakoutWorld(BreakoutWorld):
 
 class SquareBall(Ball):
     """A square ball object."""
-    asset = 'square.png'
+
+    asset = "square.png"
 
     def create_physical_entity(self):
         body = self._engine.CreateDynamicBody(
-            position=self.physical_position,
-            fixedRotation=True
+            position=self.physical_position, fixedRotation=True
         )
         body.CreatePolygonFixture(
             box=(
                 (self.width / 2.0) / self._world.physical_scale,
-                (self.height / 2.0) / self._world.physical_scale
+                (self.height / 2.0) / self._world.physical_scale,
             ),
             density=1.0,
             friction=0.0,
-            restitution=1.0
+            restitution=1.0,
         )
         return body
 
@@ -632,7 +670,7 @@ class WhiteBall(Ball):
     """White ball object."""
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('color', (255, 255, 255))
+        kwargs.setdefault("color", (255, 255, 255))
         super(WhiteBall, self).__init__(*args, **kwargs)
 
 
@@ -640,7 +678,7 @@ class WhitePaddle(Paddle):
     """White paddle object."""
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('color', (255, 255, 255))
+        kwargs.setdefault("color", (255, 255, 255))
         super(WhitePaddle, self).__init__(*args, **kwargs)
 
 
@@ -688,21 +726,23 @@ class RandomScaledBreakoutWorld(BreakoutWorld):
 
     def reset_world(self):
         super(RandomScaledBreakoutWorld, self).reset_world()
-        self.scale = self.np_random.uniform(self.scale_range_start, self.scale_range_end)
+        self.scale = self.np_random.uniform(
+            self.scale_range_start, self.scale_range_end
+        )
 
     @property
     def parameters(self):
         parameters = super(RandomScaledBreakoutWorld, self).parameters
-        parameters.update({
-            'scale': self.scale,
-        })
+        parameters.update(
+            {"scale": self.scale,}
+        )
         return parameters
 
 
 class ScaledSetABreakoutWorld(RandomScaledBreakoutWorld):
     warnings.warn(
         "This env. parameter was dropped and should no longer be used.",
-        DeprecationWarning
+        DeprecationWarning,
     )
     scale_range_start = 0.90
     scale_range_end = 0.95
@@ -711,7 +751,7 @@ class ScaledSetABreakoutWorld(RandomScaledBreakoutWorld):
 class ScaledSetBBreakoutWorld(RandomScaledBreakoutWorld):
     warnings.warn(
         "This env. parameter was dropped and should no longer be used.",
-        DeprecationWarning
+        DeprecationWarning,
     )
     scale_range_start = 0.95
     scale_range_end = 1.0
@@ -723,7 +763,9 @@ class RandomActionStrengthBreakoutWorld(BreakoutWorld):
 
     def reset_world(self):
         super(RandomActionStrengthBreakoutWorld, self).reset_world()
-        self._impulse_strength = self.np_random.uniform(self.impulse_range_start, self.impulse_range_end)
+        self._impulse_strength = self.np_random.uniform(
+            self.impulse_range_start, self.impulse_range_end
+        )
 
     def paddle_impulse(self):
         return self._impulse_strength
@@ -731,9 +773,9 @@ class RandomActionStrengthBreakoutWorld(BreakoutWorld):
     @property
     def parameters(self):
         parameters = super(RandomActionStrengthBreakoutWorld, self).parameters
-        parameters.update({
-            'impulse_strength': self._impulse_strength,
-        })
+        parameters.update(
+            {"impulse_strength": self._impulse_strength,}
+        )
         return parameters
 
 
@@ -753,22 +795,24 @@ class RandomRotatedPaddleBreakoutWorld(BreakoutWorld):
 
     def initial_paddle_rotation(self):
         """Initial paddle rotation after reset."""
-        self._paddle_rotation = self.np_random.uniform(self.rotation_range_start, self.rotation_range_end)
+        self._paddle_rotation = self.np_random.uniform(
+            self.rotation_range_start, self.rotation_range_end
+        )
         return self._paddle_rotation
 
     @property
     def parameters(self):
         parameters = super(RandomRotatedPaddleBreakoutWorld, self).parameters
-        parameters.update({
-            'paddle_rotation': self._paddle_rotation,
-        })
+        parameters.update(
+            {"paddle_rotation": self._paddle_rotation,}
+        )
         return parameters
 
 
 class RotatedPaddleSetABreakoutWorld(RandomRotatedPaddleBreakoutWorld):
     warnings.warn(
         "This env. parameter was dropped and should no longer be used.",
-        DeprecationWarning
+        DeprecationWarning,
     )
     rotation_range_start = -15
     rotation_range_end = 15
@@ -777,7 +821,7 @@ class RotatedPaddleSetABreakoutWorld(RandomRotatedPaddleBreakoutWorld):
 class RotatedPaddleSetBBreakoutWorld(RandomRotatedPaddleBreakoutWorld):
     warnings.warn(
         "This env. parameter was dropped and should no longer be used.",
-        DeprecationWarning
+        DeprecationWarning,
     )
     rotation_range_start = -25
     rotation_range_end = 25
@@ -789,15 +833,19 @@ class RandomOffsetBricksBreakoutWorld(BreakoutWorld):
 
     def initial_brick_position(self):
         """Initial brick row offset after reset."""
-        self._brick_offset = int(self.np_random.uniform(self.brick_offset_range_start, self.brick_offset_range_end))
+        self._brick_offset = int(
+            self.np_random.uniform(
+                self.brick_offset_range_start, self.brick_offset_range_end
+            )
+        )
         return self._brick_offset
 
     @property
     def parameters(self):
         parameters = super(RandomOffsetBricksBreakoutWorld, self).parameters
-        parameters.update({
-            'brick_offset': self._brick_offset,
-        })
+        parameters.update(
+            {"brick_offset": self._brick_offset,}
+        )
         return parameters
 
 
@@ -811,56 +859,67 @@ class OffsetBricksSetBBreakoutWorld(RandomOffsetBricksBreakoutWorld):
     brick_offset_range_end = 100
 
 
-class MultiParameterSetABreakoutWorld(ActionStrengthSetABreakoutWorld,
-                                      OffsetBricksSetABreakoutWorld,
-                                      SideObstacleSetABreakoutWorld):
+class MultiParameterSetABreakoutWorld(
+    ActionStrengthSetABreakoutWorld,
+    OffsetBricksSetABreakoutWorld,
+    SideObstacleSetABreakoutWorld,
+):
     """
     Parameters (all from set A):
       - action strength
       - offset bricks
       - side obstacle
     """
+
     pass
 
 
-class MultiParameterSetBBreakoutWorld(ActionStrengthSetBBreakoutWorld,
-                                      OffsetBricksSetBBreakoutWorld,
-                                      SideObstacleSetBBreakoutWorld):
+class MultiParameterSetBBreakoutWorld(
+    ActionStrengthSetBBreakoutWorld,
+    OffsetBricksSetBBreakoutWorld,
+    SideObstacleSetBBreakoutWorld,
+):
     """
     Parameters (all from set B):
       - action strength
       - offset bricks
       - side obstacle
     """
+
     pass
 
 
-class MultiParameterSetCBreakoutWorld(ActionStrengthSetABreakoutWorld,
-                                      OffsetBricksSetABreakoutWorld,
-                                      SideObstacleSetABreakoutWorld):
+class MultiParameterSetCBreakoutWorld(
+    ActionStrengthSetABreakoutWorld,
+    OffsetBricksSetABreakoutWorld,
+    SideObstacleSetABreakoutWorld,
+):
     """
     Parameters (all from set A):
       - action strength
       - offset bricks
       - side obstacle
     """
+
     warnings.warn(
         "This env. parameter was dropped and should no longer be used.",
-        DeprecationWarning
+        DeprecationWarning,
     )
     pass
 
 
-class MultiParameterSetDBreakoutWorld(ActionStrengthSetABreakoutWorld,
-                                      SideObstacleSetABreakoutWorld):
+class MultiParameterSetDBreakoutWorld(
+    ActionStrengthSetABreakoutWorld, SideObstacleSetABreakoutWorld
+):
     """
     Parameters (all from set A):
       - action strength
       - side obstacle
     """
+
     warnings.warn(
         "This env. parameter was dropped and should no longer be used.",
-        DeprecationWarning
+        DeprecationWarning,
     )
     pass
 
@@ -869,63 +928,62 @@ class Breakout(GymEnvironment):
     """Breakout Gym environment."""
 
     worlds = {
-        'baseline': BreakoutWorld,
-        'offset_paddle_50': OffsetPaddle50BreakoutWorld,
-        'offset_paddle_75': OffsetPaddle75BreakoutWorld,
-        'offset_paddle_100': OffsetPaddle100BreakoutWorld,
-        'offset_paddle_125': OffsetPaddle125BreakoutWorld,
-        'offset_paddle_150': OffsetPaddle150BreakoutWorld,
-        'random_offset_paddle': RandomOffsetPaddleBreakoutWorld,
-        'physically_offset_paddle_125': PhysicallyOffsetPaddle125BreakoutWorld,
-        'obstacle': ObstacleBreakoutWorld,
-        'side_obstacle': SideObstacleBreakoutWorld,
-        'left_side_obstacle': LeftSideObstacleBreakoutWorld,
-        'right_side_obstacle': RightSideObstacleBreakoutWorld,
-        'random_side_obstacle': RandomSideObstacleBreakoutWorld,
-        'small_paddle': SmallPaddleBreakoutWorld,
-        'small10_paddle': Small10PaddleBreakoutWorld,
-        'small20_paddle': Small20PaddleBreakoutWorld,
-        'small30_paddle': Small30PaddleBreakoutWorld,
-        'random_small_paddle': RandomSmallPaddleBreakoutWorld,
-        'big_ball': BigBallBreakoutWorld,
-        'huge_ball': HugeBallBreakoutWorld,
-        'square_ball': SquareBallBreakoutWorld,
-        'one_color': OneColorBreakoutWorld,
-        'scaled_80': Scaled80BreakoutWorld,
-        'scaled_90': Scaled90BreakoutWorld,
-        'scaled_95': Scaled95BreakoutWorld,
-        'scaled_99': Scaled99BreakoutWorld,
-        'random_scaled': RandomScaledBreakoutWorld,
-
-        'offset_paddle_set_a': OffsetPaddleSetABreakoutWorld,
-        'offset_paddle_set_b': OffsetPaddleSetBBreakoutWorld,
-        'rotated_paddle_set_a': RotatedPaddleSetABreakoutWorld,
-        'rotated_paddle_set_b': RotatedPaddleSetBBreakoutWorld,
-        'offset_bricks_set_a': OffsetBricksSetABreakoutWorld,
-        'offset_bricks_set_b': OffsetBricksSetBBreakoutWorld,
-        'scaled_set_a': ScaledSetABreakoutWorld,
-        'scaled_set_b': ScaledSetBBreakoutWorld,
-        'action_strength_set_a': ActionStrengthSetABreakoutWorld,
-        'action_strength_set_b': ActionStrengthSetBBreakoutWorld,
-        'side_obstacle_set_a': SideObstacleSetABreakoutWorld,
-        'side_obstacle_set_b': SideObstacleSetBBreakoutWorld,
-        'multi_parameter_set_a': MultiParameterSetABreakoutWorld,
-        'multi_parameter_set_b': MultiParameterSetBBreakoutWorld,
-        'multi_parameter_set_c': MultiParameterSetCBreakoutWorld,
-        'multi_parameter_set_d': MultiParameterSetDBreakoutWorld,
+        "baseline": BreakoutWorld,
+        "offset_paddle_50": OffsetPaddle50BreakoutWorld,
+        "offset_paddle_75": OffsetPaddle75BreakoutWorld,
+        "offset_paddle_100": OffsetPaddle100BreakoutWorld,
+        "offset_paddle_125": OffsetPaddle125BreakoutWorld,
+        "offset_paddle_150": OffsetPaddle150BreakoutWorld,
+        "random_offset_paddle": RandomOffsetPaddleBreakoutWorld,
+        "physically_offset_paddle_125": PhysicallyOffsetPaddle125BreakoutWorld,
+        "obstacle": ObstacleBreakoutWorld,
+        "side_obstacle": SideObstacleBreakoutWorld,
+        "left_side_obstacle": LeftSideObstacleBreakoutWorld,
+        "right_side_obstacle": RightSideObstacleBreakoutWorld,
+        "random_side_obstacle": RandomSideObstacleBreakoutWorld,
+        "small_paddle": SmallPaddleBreakoutWorld,
+        "small10_paddle": Small10PaddleBreakoutWorld,
+        "small20_paddle": Small20PaddleBreakoutWorld,
+        "small30_paddle": Small30PaddleBreakoutWorld,
+        "random_small_paddle": RandomSmallPaddleBreakoutWorld,
+        "big_ball": BigBallBreakoutWorld,
+        "huge_ball": HugeBallBreakoutWorld,
+        "square_ball": SquareBallBreakoutWorld,
+        "one_color": OneColorBreakoutWorld,
+        "scaled_80": Scaled80BreakoutWorld,
+        "scaled_90": Scaled90BreakoutWorld,
+        "scaled_95": Scaled95BreakoutWorld,
+        "scaled_99": Scaled99BreakoutWorld,
+        "random_scaled": RandomScaledBreakoutWorld,
+        "offset_paddle_set_a": OffsetPaddleSetABreakoutWorld,
+        "offset_paddle_set_b": OffsetPaddleSetBBreakoutWorld,
+        "rotated_paddle_set_a": RotatedPaddleSetABreakoutWorld,
+        "rotated_paddle_set_b": RotatedPaddleSetBBreakoutWorld,
+        "offset_bricks_set_a": OffsetBricksSetABreakoutWorld,
+        "offset_bricks_set_b": OffsetBricksSetBBreakoutWorld,
+        "scaled_set_a": ScaledSetABreakoutWorld,
+        "scaled_set_b": ScaledSetBBreakoutWorld,
+        "action_strength_set_a": ActionStrengthSetABreakoutWorld,
+        "action_strength_set_b": ActionStrengthSetBBreakoutWorld,
+        "side_obstacle_set_a": SideObstacleSetABreakoutWorld,
+        "side_obstacle_set_b": SideObstacleSetBBreakoutWorld,
+        "multi_parameter_set_a": MultiParameterSetABreakoutWorld,
+        "multi_parameter_set_b": MultiParameterSetBBreakoutWorld,
+        "multi_parameter_set_c": MultiParameterSetCBreakoutWorld,
+        "multi_parameter_set_d": MultiParameterSetDBreakoutWorld,
     }
 
     def get_action_meanings(self):
         return [
-            'NOOP',
-            'LEFT',
-            'RIGHT',
+            "NOOP",
+            "LEFT",
+            "RIGHT",
         ]
 
     def get_keys_to_action(self):
         return {
             (): 0,
-            (ord('a'),): 1,
-            (ord('d'),): 2,
-            (ord('a'), ord('d')): 0,
+            (ord("a"),): 1,
+            (ord("d"),): 2,
+            (ord("a"), ord("d")): 0,
         }

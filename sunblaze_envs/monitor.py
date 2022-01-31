@@ -6,6 +6,7 @@ import gym
 
 class MonitorParameters(gym.Wrapper):
     """Environment wrapper which records all environment parameters."""
+
     current_parameters = None
 
     def __init__(self, env, output_filename):
@@ -16,7 +17,7 @@ class MonitorParameters(gym.Wrapper):
         :param output_filename: Output log filename
         """
         self._output_filename = output_filename
-        with open(output_filename, 'w'):
+        with open(output_filename, "w"):
             # Truncate output file.
             pass
 
@@ -34,12 +35,13 @@ class MonitorParameters(gym.Wrapper):
 
     def record_parameters(self):
         """Record current environment parameters."""
-        if not hasattr(self.env.unwrapped, 'parameters'): return
+        if not hasattr(self.env.unwrapped, "parameters"):
+            return
         if self.env.unwrapped.parameters == self.current_parameters:
             return
 
         # Record parameter set in output file.
         self.current_parameters = self.env.unwrapped.parameters
-        with open(self._output_filename, 'a') as output_file:
+        with open(self._output_filename, "a") as output_file:
             output_file.write(json.dumps(self.current_parameters))
-            output_file.write('\n')
+            output_file.write("\n")
